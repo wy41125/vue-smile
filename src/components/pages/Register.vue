@@ -108,5 +108,6 @@ import { Toast } from 'vant'
     }
     .button{
         padding-top: 20px;
+        padding-bottom: 10px;
     }
 </style>

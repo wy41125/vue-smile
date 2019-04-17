@@ -14,7 +14,6 @@
                 placeholder="请输入用户名"
                 required
                 @click-icon="username=''"
-                :error-message="usernameErrorMsg"
             />
             <van-field 
                 v-model="password"
@@ -22,7 +21,6 @@
                 label="密码"
                 placeholder="请输入密码"
                 required
-                :error-message="passwordErrorMsg"
             />
             <div class="button">
                 <van-button type="primary" @click="registerAction" size="large" :loading="openLoading">登录</van-button>
@@ -41,8 +39,12 @@ import { Toast } from 'vant'
                 username: "",
                 password:'',
                 openLoading:false,//是否开启用户注册的loading状态
-                usernameErrorMsg:'',//当用户名出现错误时的提示信息
-                passwordErrorMsg:'',//当密码出现错误时的提示信息
+            }
+        },
+        created(){
+            if(localStorage.userInfo){
+                Toast.success('已登录')
+                this.$router.push('/')
             }
         },
         methods:{
@@ -50,12 +52,12 @@ import { Toast } from 'vant'
                 this.$router.go(-1)
             },
             registerAction(){
-                this.checkFrom && this.axiosClick()
+                this.axiosClick()
             },
             axiosClick(){
                 this.openLoading = true;
                 axios({
-                    url:url.registerUser,
+                    url:url.login,
                     method:'post',
                     data:{
                         userName:this.username,
@@ -64,37 +66,28 @@ import { Toast } from 'vant'
                 })
                 .then( (res)=>{
                     console.log(res)
-                    if(res.data.code == 200){
-                        Toast.success(res.data.message)
-                        this.$router.push('/')
+                    if(res.data.code == 200 && res.data.meeeage){
+                        new Promise( (resolve,reject)=>{
+                            localStorage.userInfo = {userName:this.userName}
+                            setTimeout(()=>{resolve()},500)
+                        }).then( ()=>{
+                            Toast.success("登录成功")
+                            this.$router.push('/')
+                        }).catch( (err)=>{
+                            Toast.fail("登录状态保存失败")
+                            console.log(err)
+                        })
+                        
                     }else{
-                        console.log(res.data.message)
+                        Toast.success("登录失败")
                         this.openLoading = false;
-                        Toast.fail('注册失败')
                     }
                 })
                 .catch( (error)=>{
+                    Toast.success("登录失败")
                     this.openLoading = false;
-                    console.log(error)
                 })
             },
-            checkFrom(){//表单验证方法
-                let isOk = true
-                if(this,username.length<5){
-                    this.usernameErrorMsg = '用户名不能小于5位'
-                    isOk = false
-                }else{
-                    this.usernameErrorMsg = ''
-                }
-                if(this.password.length<6){
-                    this.passwordErrorMsg = '密码不能小于6位'
-                    isOk = false
-                }else{
-                    thsi.passwordErrorMsg =''
-                }
-
-                return isOk
-            }
         }
     }
 </script>
