@@ -78,8 +78,9 @@ import {toMoney} from '@/filter/moneyFilter.js'
         },
         mounted(){
             let winheight = document.documentElement.clientHeight
-            document.getElementById("leftNav").style.height = winheight-46 +'px'
+            document.getElementById("leftNav").style.height = winheight-46-50 +'px'
             document.getElementById("list-div").style.height = winheight-90 +'px'
+
         },
         methods:{
             getCategoryList(){//获取大类数据
